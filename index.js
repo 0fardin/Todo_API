@@ -2,9 +2,12 @@ const express = require("express");
 const app = express();
 const DBconnect = require("./DB/DBconfig");
 const TodoModel = require("./model/TodoModel");
+const cors = require("cors");
 
 DBconnect();
 app.use(express.json());
+app.use(cors());
+app.use(express.urlencoded({ extended: true }));
 
 // GET ALL TODO
 
@@ -23,11 +26,9 @@ app.get("/getonetodo/:id", async (req, res) => {
 // CREATE TODO
 
 app.post("/createtodo", async (req, res) => {
-  let { name, email, contact } = req.body;
+  let { name } = req.body;
   let createtodo = new TodoModel({
     name: name,
-    email: email,
-    contact: contact,
   });
   await createtodo.save();
   res.status(201).send({ msg: "Your Data Posted in Database" });
@@ -45,10 +46,10 @@ app.delete("/deletetodo/:id", async (req, res) => {
 
 app.patch("/updatetodo/:id", async (req, res) => {
   let id = req.params.id;
-  let { name, email, contact } = req.body;
+  let { name } = req.body;
   let updatetodo = await TodoModel.findByIdAndUpdate(
     { _id: id },
-    { name: name, email: email, contact: contact, update: true }
+    { name: name, update: true }
   );
   res.status(200).send({ success: "UpDate Success!", updatetodo });
 });
